@@ -1,0 +1,56 @@
+### 1. Create a user
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepass123",
+  "name": "Jane Doe",
+  "consent": true
+}
+
+> {% client.global.set("userId", response.body.id) %}
+
+---
+
+### 2. Create a product
+POST http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+  "name": "Antique Vase",
+  "description": "Rare 18th-century vase",
+  "price": 150,
+  "pictures": ["https://example.com/vase.jpg"]
+}
+
+> {% client.global.set("productId", response.body.id) %}
+
+---
+
+### 3. Create an auction
+POST http://localhost:3000/api/auctions
+Content-Type: application/json
+
+{
+  "title": "Antique Vase Auction",
+  "startingPrice": 150,
+  "endsAt": "2025-08-10T18:00:00.000Z",
+  "ownerId": "{{userId}}",
+  "productId": "{{productId}}"
+}
+
+> {% client.global.set("auctionId", response.body.id) %}
+
+---
+
+### 4. Send a bid (simulating Kafka consumer POST)
+POST http://localhost:3000/api/kafka/bid
+Content-Type: application/json
+
+{
+  "price": 175,
+  "auctionId": "{{auctionId}}",
+  "user": "{{userId}}"
+}
+
